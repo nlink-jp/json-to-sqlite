@@ -110,6 +110,12 @@ func openDatabase(dbPath string) (*sql.DB, error) {
 	return db, nil
 }
 
+// quoteIdentifier はSQLiteの識別子を正しく引用符で囲みます。
+// 識別子内の二重引用符は二重にエスケープされます。
+func quoteIdentifier(name string) string {
+	return `"` + strings.ReplaceAll(name, `"`, `""`) + `"`
+}
+
 func inferSchema(data []map[string]interface{}) map[string]string {
 	columnTypes := make(map[string]string)
 	for _, row := range data {
@@ -157,10 +163,10 @@ func setupTable(db *sql.DB, tableName string, data []map[string]interface{}) ([]
 	if !tableExists {
 		var columns []string
 		for name, colType := range inferredSchema {
-			columns = append(columns, fmt.Sprintf("\"%s\" %s", name, colType))
+			columns = append(columns, fmt.Sprintf("%s %s", quoteIdentifier(name), colType))
 		}
 		sort.Strings(columns) // Ensure consistent order for CREATE TABLE
-		createQuery := fmt.Sprintf("CREATE TABLE \"%s\" (%s)", tableName, strings.Join(columns, ", "))
+		createQuery := fmt.Sprintf("CREATE TABLE %s (%s)", quoteIdentifier(tableName), strings.Join(columns, ", "))
 		_, err := db.Exec(createQuery)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create table: %w", err)
@@ -170,8 +176,7 @@ func setupTable(db *sql.DB, tableName string, data []map[string]interface{}) ([]
 		// Use string concatenation for PRAGMA to avoid any Sprintf formatting issues.
 		// Table names can't be parameterized in PRAGMA statements.
 		pragmaQuery := "PRAGMA table_info(" + `"` + strings.ReplaceAll(tableName, `"`, `""`) + `"` + ")"
-	
-rows, err := db.Query(pragmaQuery)
+		rows, err := db.Query(pragmaQuery)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get existing table info: %w", err)
 		}
@@ -193,7 +198,7 @@ rows, err := db.Query(pragmaQuery)
 
 		for colName, colType := range inferredSchema {
 			if !existingColumns[colName] {
-				alterQuery := fmt.Sprintf("ALTER TABLE \"%s\" ADD COLUMN \"%s\" %s", tableName, colName, colType)
+				alterQuery := fmt.Sprintf("ALTER TABLE %s ADD COLUMN %s %s", quoteIdentifier(tableName), quoteIdentifier(colName), colType)
 				_, err := db.Exec(alterQuery)
 				if err != nil {
 					return nil, fmt.Errorf("failed to add column '%s': %w", colName, err)
@@ -219,7 +224,13 @@ func insertData(db *sql.DB, tableName string, columns []string, data []map[strin
 	placeholders := strings.Repeat("?,", len(columns))
 	placeholders = placeholders[:len(placeholders)-1]
 
-	query := fmt.Sprintf("INSERT INTO \"%s\" (%s) VALUES (%s)", tableName, "\""+strings.Join(columns, "\", \"")+"\"", placeholders)
+	// Build the quoted column names for the INSERT statement
+	quotedColumns := make([]string, len(columns))
+	for i, col := range columns {
+		quotedColumns[i] = quoteIdentifier(col)
+	}
+
+	query := fmt.Sprintf("INSERT INTO %s (%s) VALUES (%s)", quoteIdentifier(tableName), strings.Join(quotedColumns, ", "), placeholders)
 
 	tx, err := db.Begin()
 	if err != nil {
