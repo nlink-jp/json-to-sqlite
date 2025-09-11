@@ -24,8 +24,8 @@ func main() {
 		Version = "dev"
 	}
 
-	outputDB := flag.String("o", "output.db", "Output SQLite database file")
-	tableName := flag.String("t", "data", "Table name to insert data into")
+	outputDB := flag.String("o", "", "Output SQLite database file (required)")
+	tableName := flag.String("t", "", "Table name to insert data into (required)")
 	versionFlag := flag.Bool("version", false, "Print version information")
 
 	flag.Parse()
@@ -35,7 +35,25 @@ func main() {
 		return
 	}
 
+	if *outputDB == "" {
+		fmt.Println("Error: Output database file (-o) is required.")
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+
+	if *tableName == "" {
+		fmt.Println("Error: Table name (-t) is required.")
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+
 	// --- Input Handling ---
+	if len(flag.Args()) == 0 {
+		fmt.Println("Usage: json-to-sqlite [options] <input_json_file>")
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+
 	reader, err := getInputReader(flag.Args())
 	if err != nil {
 		log.Fatal(err)

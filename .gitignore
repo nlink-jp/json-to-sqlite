@@ -42,3 +42,7 @@ testdata/
 
 # IDE
 .vscode/
+
+# Local test artifacts
+*.db
+*.json

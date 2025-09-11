@@ -35,28 +35,29 @@ make build
 
 ## Usage
 
-The tool accepts the following flags:
+The tool requires an input JSON file and the following flags:
 
--   `-o <path>`: Specifies the path for the output SQLite database file. (Default: `output.db`)
--   `-t <name>`: Specifies the name of the table to create or update. (Default: `data`)
+-   `-o <path>`: **Required.** Specifies the path for the output SQLite database file.
+-   `-t <name>`: **Required.** Specifies the name of the table to create or update.
 -   `--version`: Prints the current version of the tool.
 
 ### Examples
 
 **1. Convert a JSON file into a new database:**
 ```bash
-json-to-sqlite -o users.db -t users ./users.json
+json-to-sqlite -o users.db -t users users.json
 ```
 
 **2. Pipe JSON data from another command (e.g., `curl`):**
 ```bash
-curl "https://api.example.com/data" | json-to-sqlite -o api_data.db -t records
+curl "https://api.example.com/data" | json-to-sqlite -o api_data.db -t records -
 ```
+*Note: When piping from stdin, use `-` as the input_json_file argument.*
 
 **3. Add new data with potentially new columns to an existing database:**
 ```bash
 # This second command might add new columns to the 'users' table if new_users.json has different fields
-json-to-sqlite -o users.db -t users ./new_users.json
+json-to-sqlite -o users.db -t users new_users.json
 ```
 
 ## How It Works

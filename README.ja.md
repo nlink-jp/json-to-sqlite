@@ -35,28 +35,29 @@ make build
 
 ## 使い方
 
-以下のフラグが使用できます。
+このツールは入力JSONファイルと以下のフラグを必要とします。
 
--   `-o <パス>`: 出力先のSQLiteデータベースファイルを指定します。(デフォルト: `output.db`)
--   `-t <テーブル名>`: 作成または更新するテーブル名を指定します。(デフォルト: `data`)
+-   `-o <パス>`: **必須。** 出力先のSQLiteデータベースファイルを指定します。
+-   `-t <テーブル名>`: **必須。** 作成または更新するテーブル名を指定します。
 -   `--version`: ツールのバージョン情報を表示します。
 
 ### 使用例
 
 **1. JSONファイルを新しいデータベースに変換する:**
 ```bash
-json-to-sqlite -o users.db -t users ./users.json
+json-to-sqlite -o users.db -t users users.json
 ```
 
 **2. 他のコマンド（例: `curl`）からJSONデータをパイプで渡す:**
 ```bash
-curl "https://api.example.com/data" | json-to-sqlite -o api_data.db -t records
+curl "https://api.example.com/data" | json-to-sqlite -o api_data.db -t records -
 ```
+*注: 標準入力からパイプで渡す場合、`input_json_file`引数として`-`を使用してください。*
 
 **3. 新しいカラムを持つ可能性のあるデータを既存のデータベースに追加する:**
 ```bash
 # new_users.jsonに新しいフィールドがあれば、この2回目のコマンドで'users'テーブルに新しいカラムが追加されます
-json-to-sqlite -o users.db -t users ./new_users.json
+json-to-sqlite -o users.db -t users new_users.json
 ```
 
 ## 動作の詳細
