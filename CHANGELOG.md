@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.1.0 - 2025-09-11
+
+### Added
+- Made input JSON file, output SQLite database file (-o), and table name (-t) mandatory arguments.
+- Removed default values for -o and -t flags.
+
 ## v1.0.1 - 2025-09-11
 
 ### Fixed
