@@ -35,11 +35,13 @@ make build
 
 ## 使い方
 
-このツールは入力JSONファイルと以下のフラグを必要とします。
+このツールは、必須のフラグ`-o`と`-t`に加えて、JSONデータを入力ファイルまたは標準入力経由で受け取ります。
 
 -   `-o <パス>`: **必須。** 出力先のSQLiteデータベースファイルを指定します。
 -   `-t <テーブル名>`: **必須。** 作成または更新するテーブル名を指定します。
 -   `--version`: ツールのバージョン情報を表示します。
+
+任意の引数 `[入力ファイル]` を指定すると、そのファイルからJSONを読み込みます。`[入力ファイル]` が省略されるか、`-` に設定された場合、ツールは標準入力から読み込みます。
 
 ### 使用例
 
@@ -50,9 +52,9 @@ json-to-sqlite -o users.db -t users users.json
 
 **2. 他のコマンド（例: `curl`）からJSONデータをパイプで渡す:**
 ```bash
-curl "https://api.example.com/data" | json-to-sqlite -o api_data.db -t records -
+curl "https://api.example.com/data" | json-to-sqlite -o api_data.db -t records
 ```
-*注: 標準入力からパイプで渡す場合、`input_json_file`引数として`-`を使用してください。*
+*注: 上記のコマンドは `[入力ファイル]` 引数を省略しているため機能します。引数として `-` を使用しても (`... | json-to-sqlite -o api_data.db -t records -`) 同じ結果になります。*
 
 **3. 新しいカラムを持つ可能性のあるデータを既存のデータベースに追加する:**
 ```bash

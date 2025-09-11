@@ -28,6 +28,25 @@ func main() {
 	tableName := flag.String("t", "", "Table name to insert data into (required)")
 	versionFlag := flag.Bool("version", false, "Print version information")
 
+	flag.Usage = func() {
+		fmt.Fprintln(os.Stderr, "Usage: json-to-sqlite -o <database.db> -t <table_name> [input_file]")
+		fmt.Fprintln(os.Stderr, "")
+		fmt.Fprintln(os.Stderr, "A tool to convert JSON data into an SQLite database.")
+		fmt.Fprintln(os.Stderr, "")
+		fmt.Fprintln(os.Stderr, "Reads JSON from a file or from standard input and creates a table with a schema")
+		fmt.Fprintln(os.Stderr, "inferred from the JSON objects.")
+		fmt.Fprintln(os.Stderr, "")
+		fmt.Fprintln(os.Stderr, "If [input_file] is omitted or is '-', data is read from standard input.")
+		fmt.Fprintln(os.Stderr, "")
+		fmt.Fprintln(os.Stderr, "The JSON input must be an array of objects or a single JSON object.")
+		fmt.Fprintln(os.Stderr, "")
+		fmt.Fprintln(os.Stderr, "Options:")
+		flag.PrintDefaults()
+		fmt.Fprintln(os.Stderr, "")
+		fmt.Fprintln(os.Stderr, "Example:")
+		fmt.Fprintln(os.Stderr, "  cat data.json | json-to-sqlite -o my.db -t my_table")
+	}
+
 	flag.Parse()
 
 	if *versionFlag {
@@ -36,24 +55,18 @@ func main() {
 	}
 
 	if *outputDB == "" {
-		fmt.Println("Error: Output database file (-o) is required.")
-		flag.PrintDefaults()
+		fmt.Fprintln(os.Stderr, "Error: Output database file (-o) is required.\n")
+		flag.Usage()
 		os.Exit(1)
 	}
 
 	if *tableName == "" {
-		fmt.Println("Error: Table name (-t) is required.")
-		flag.PrintDefaults()
+		fmt.Fprintln(os.Stderr, "Error: Table name (-t) is required.\n")
+		flag.Usage()
 		os.Exit(1)
 	}
 
 	// --- Input Handling ---
-	if len(flag.Args()) == 0 {
-		fmt.Println("Usage: json-to-sqlite [options] <input_json_file>")
-		flag.PrintDefaults()
-		os.Exit(1)
-	}
-
 	reader, err := getInputReader(flag.Args())
 	if err != nil {
 		log.Fatal(err)
@@ -89,9 +102,13 @@ func main() {
 	fmt.Printf("Successfully processed %d objects into table '%s' in database '%s'.\n", len(data), *tableName, *outputDB)
 }
 
+
 func getInputReader(args []string) (io.Reader, error) {
 	if len(args) > 0 {
 		filePath := args[0]
+		if filePath == "-" {
+			return os.Stdin, nil
+		}
 		file, err := os.Open(filePath)
 		if err != nil {
 			return nil, fmt.Errorf("error opening file %s: %w", filePath, err)
