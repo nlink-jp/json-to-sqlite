@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.2.0 - 2025-09-12
+
+### Fixed
+- The tool now correctly reads from standard input when no input file is specified or when '-' is used as the file name, allowing for proper pipeline usage.
+
+### Changed
+- Improved the CLI help message for clarity, explicitly marking required flags and providing a better usage example.
+- Updated and synchronized `README.md` and `README.ja.md` to accurately reflect the tool's argument handling and usage.
+
 ## v1.1.0 - 2025-09-11
 
 ### Added
