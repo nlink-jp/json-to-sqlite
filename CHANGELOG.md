@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.0.1 - 2025-09-11
+
+### Fixed
+- Implemented robust SQL identifier quoting to prevent syntax errors with JSON keys containing special characters (e.g., double quotes).
+
 ## v1.0.0 - 2025-09-11
 
 ### Added
