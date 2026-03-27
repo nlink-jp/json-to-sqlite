@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.2.3 - 2026-03-28
+
+### Changed
+- Makefile: replace hardcoded musl-cross/mingw-w64 cross-compiler flags with Podman-based container builds for Linux (amd64/arm64) and Windows (amd64), following the lite-rag pattern. Adds `build-darwin`, `build-linux`, `build-linux-native`, `build-windows` targets. `check` now depends only on `build-darwin` (no container required for local dev).
+
 ## v1.2.2 - 2026-03-28
 
 ### Changed
