@@ -1,4 +1,4 @@
-module github.com/magifd2/json-to-sqlite
+module github.com/nlink-jp/json-to-sqlite
 
 go 1.25.1
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2.1 - 2026-03-28
+
+### Internal
+
+- Updated Go module path to `github.com/nlink-jp/json-to-sqlite` following repository transfer to nlink-jp organization.
+
 ## v1.2.0 - 2025-09-12
 
 ### Fixed
