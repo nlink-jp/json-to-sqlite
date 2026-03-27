@@ -11,27 +11,11 @@ This tool automatically infers table schemas, handles schema evolution by adding
 -   **Flexible Input**: Reads JSON data from files or piped directly from standard input.
 -   **Data Type Mapping**: Automatically maps JSON types to appropriate SQLite types (`TEXT`, `REAL`, `INTEGER`). Defaults to `TEXT` for safety in case of conflicting types.
 -   **Handles Nested JSON**: Serializes nested JSON objects and arrays into `TEXT` columns.
--   **Cross-Platform**: Builds for macOS (amd64/arm64), Linux (amd64/arm64), and Windows (amd64) via the provided `Makefile`. Linux and Windows cross-compilation requires CGO cross-compilers (`musl-cross`, `mingw-w64`).
+-   **Cross-Platform**: Builds for macOS (amd64/arm64), Linux (amd64/arm64), and Windows (amd64) via the provided `Makefile`. Linux and Windows cross-compilation uses Podman (or Docker) containers due to CGO requirements.
 
 ## Installation
 
-### From Release
 Download the latest pre-compiled binary for your operating system from the [Releases](https://github.com/nlink-jp/json-to-sqlite/releases) page.
-
-### From Source
-To build from source, you will need Go and Make installed.
-
-```bash
-# 1. Clone the repository
-git clone https://github.com/nlink-jp/json-to-sqlite.git
-cd json-to-sqlite
-
-# 2. Build the binary
-make build
-
-# The executable will be in dist/
-# For example: ./dist/json-to-sqlite
-```
 
 ## Usage
 
@@ -60,6 +44,32 @@ curl "https://api.example.com/data" | json-to-sqlite -o api_data.db -t records
 ```bash
 # This second command might add new columns to the 'users' table if new_users.json has different fields
 json-to-sqlite -o users.db -t users new_users.json
+```
+
+## Building
+
+To build from source, you will need Go and Make installed.
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/nlink-jp/json-to-sqlite.git
+cd json-to-sqlite
+
+# 2. Build the binary
+make build
+
+# The executable will be in dist/
+# For example: ./dist/json-to-sqlite
+```
+
+For cross-compilation and packaging for all platforms (Linux/Windows builds require Podman or Docker):
+
+```bash
+# Build for all platforms
+make build-all
+
+# Build all binaries and create .zip archives in dist/
+make package
 ```
 
 ## How It Works
