@@ -11,26 +11,26 @@ This tool automatically infers table schemas, handles schema evolution by adding
 -   **Flexible Input**: Reads JSON data from files or piped directly from standard input.
 -   **Data Type Mapping**: Automatically maps JSON types to appropriate SQLite types (`TEXT`, `REAL`, `INTEGER`). Defaults to `TEXT` for safety in case of conflicting types.
 -   **Handles Nested JSON**: Serializes nested JSON objects and arrays into `TEXT` columns.
--   **Cross-Platform**: Builds for Windows, Linux, and macOS (Universal Binary) via the provided `Makefile`.
+-   **Cross-Platform**: Builds for macOS (amd64/arm64), Linux (amd64/arm64), and Windows (amd64) via the provided `Makefile`. Linux and Windows cross-compilation requires CGO cross-compilers (`musl-cross`, `mingw-w64`).
 
 ## Installation
 
 ### From Release
-Download the latest pre-compiled binary for your operating system from the [Releases](https://github.com/magifd2/json-to-sqlite/releases) page.
+Download the latest pre-compiled binary for your operating system from the [Releases](https://github.com/nlink-jp/json-to-sqlite/releases) page.
 
 ### From Source
 To build from source, you will need Go and Make installed.
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/magifd2/json-to-sqlite.git
+git clone https://github.com/nlink-jp/json-to-sqlite.git
 cd json-to-sqlite
 
 # 2. Build the binary
 make build
 
-# The executable will be in ./bin/<os>-<arch>/
-# For example: ./bin/darwin-universal/json-to-sqlite
+# The executable will be in dist/
+# For example: ./dist/json-to-sqlite
 ```
 
 ## Usage
