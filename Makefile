@@ -1,7 +1,7 @@
 BINARY  := json-to-sqlite
 VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 # Note: capital V — matches `var Version string` in main.go
-LDFLAGS := -ldflags "-X main.Version=$(VERSION)"
+LDFLAGS := -ldflags '-X main.Version=$(VERSION)'
 
 # Container runtime (podman preferred, docker as fallback)
 CONTAINER := $(shell command -v podman 2>/dev/null || command -v docker 2>/dev/null)
