@@ -28,8 +28,9 @@ go.work.sum
 .idea/
 .vscode/
 
-# Build artifacts for scat
+# Build artifacts
 /bin/
+dist/
 
 # macOS specific files
 .DS_Store
