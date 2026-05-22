@@ -1,5 +1,39 @@
 # Changelog
 
+## v1.2.4 - 2026-05-23
+
+### Changed
+
+- **Darwin releases are now Developer ID signed and Apple-notarized.**
+  `json-to-sqlite-v1.2.4-darwin-{amd64,arm64}.zip` carry full Apple
+  Developer ID Application signatures and notarization tickets from
+  Apple. End users on macOS no longer need to bypass Gatekeeper
+  with right-click → Open or `xattr -d com.apple.quarantine` on
+  first launch; local users who place `json-to-sqlite` under
+  Dropbox-synced (or any other FileProvider-managed) paths are no
+  longer killed by macOS's ad-hoc + provenance distrust policy.
+  Pipeline: `scripts/codesign-darwin.sh` +
+  `scripts/notarize-darwin.sh`, driven by `make package`. Adopts
+  the org-wide convention in `nlink-jp/.github` CONVENTIONS.md
+  §Code Signing.
+
+### Fixed
+
+- **Windows CGO cross-compile updated to UCRT64 toolchain.**
+  Preemptively adopts the toolchain switch and `ranlib` workaround
+  established in `gem-query v0.3.2` — Debian's mingw packaging
+  ships archives without an index that the default
+  `gcc-mingw-w64-x86-64` chain fails to link against modern CGO
+  C/C++ runtimes. Switch:
+  `gcc-mingw-w64-ucrt64` + `g++-mingw-w64-ucrt64`, with
+  `x86_64-w64-mingw32ucrt-ranlib` over every toolchain archive
+  before `go build`. Result: the CGO link against
+  `mattn/go-sqlite3` continues to work even as the upstream
+  Debian Go image's mingw alternatives drift.
+
+No behaviour change to the binary itself — feature-wise this is
+identical to v1.2.3.
+
 ## v1.2.3 - 2026-03-28
 
 ### Changed
