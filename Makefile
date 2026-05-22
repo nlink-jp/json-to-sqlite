@@ -8,6 +8,14 @@ CONTAINER := $(shell command -v podman 2>/dev/null || command -v docker 2>/dev/n
 # Go image used for container builds — must match go.mod toolchain.
 GO_IMAGE  := golang:1.26
 
+# macOS Developer ID signing / notarization (see nlink-jp/.github
+# CONVENTIONS.md §Code Signing). Defaults match any Developer ID
+# Application cert in the keychain and the org-standard notary
+# profile. Builds without these fall back to ad-hoc / un-notarized
+# with a one-line warning — see scripts/codesign-darwin.sh.
+CODESIGN_IDENTITY ?= Developer ID Application
+NOTARY_PROFILE    ?= nlink-jp-notary
+
 PLATFORMS := \
 	linux/amd64 \
 	linux/arm64 \
@@ -22,6 +30,7 @@ PLATFORMS := \
 build:
 	@mkdir -p dist
 	go build $(LDFLAGS) -o dist/$(BINARY) .
+	@scripts/codesign-darwin.sh dist/$(BINARY) "$(CODESIGN_IDENTITY)"
 
 ## build-all: Cross-compile for all target platforms
 build-all: build-darwin build-linux build-windows
@@ -31,6 +40,8 @@ build-darwin:
 	@mkdir -p dist
 	CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build $(LDFLAGS) -o dist/$(BINARY)-darwin-amd64 .
 	CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build $(LDFLAGS) -o dist/$(BINARY)-darwin-arm64 .
+	@scripts/codesign-darwin.sh dist/$(BINARY)-darwin-amd64 "$(CODESIGN_IDENTITY)"
+	@scripts/codesign-darwin.sh dist/$(BINARY)-darwin-arm64 "$(CODESIGN_IDENTITY)"
 
 ## build-linux: Compile linux/amd64 and linux/arm64 inside a container
 # CGO requires a Linux host; run inside a container via podman/docker.
@@ -72,6 +83,9 @@ build-linux-native:
 	fi
 
 ## build-windows: Compile windows/amd64 inside a container (requires podman or docker)
+# Uses the UCRT64 mingw toolchain (matches modern C runtime). Debian ships
+# UCRT64 archives without an index, so we ranlib every .a in the toolchain
+# before linking. See feedback_cgo_windows_ucrt notes / gem-query Makefile.
 build-windows:
 	@if [ -z "$(CONTAINER)" ]; then \
 		echo "Error: podman or docker is required for Windows cross-compilation."; \
@@ -84,9 +98,11 @@ build-windows:
 		-v "$(CURDIR):/workspace:z" \
 		-w /workspace \
 		$(GO_IMAGE) \
-		bash -c "apt-get update -qq && apt-get install -y -q gcc-mingw-w64-x86-64 \
-			&& GOOS=windows GOARCH=amd64 CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc \
-			go build $(LDFLAGS) -o dist/$(BINARY)-windows-amd64.exe ."
+		bash -c 'apt-get update -qq && apt-get install -y -q gcc-mingw-w64-ucrt64 g++-mingw-w64-ucrt64 \
+			&& find /usr/lib/gcc/x86_64-w64-mingw32ucrt /usr/x86_64-w64-mingw32ucrt -name "*.a" -exec x86_64-w64-mingw32ucrt-ranlib {} + \
+			&& GOOS=windows GOARCH=amd64 CGO_ENABLED=1 \
+			CC=x86_64-w64-mingw32ucrt-gcc CXX=x86_64-w64-mingw32ucrt-g++ \
+			go build -ldflags "-X main.Version=$(VERSION)" -o dist/$(BINARY)-windows-amd64.exe .'
 
 ## test: Run the full test suite
 test:
@@ -99,7 +115,7 @@ lint:
 ## check: Run lint + test + build-darwin
 check: lint test build-darwin
 
-## package: Build all platforms and create .zip archives
+## package: Build all platforms, zip with versioned naming + LICENSE + README, notarize darwin
 package: build-all
 	$(foreach platform,$(PLATFORMS), \
 		$(eval GOOS=$(word 1,$(subst /, ,$(platform)))) \
@@ -108,6 +124,8 @@ package: build-all
 		$(eval ARCHIVE=dist/$(BINARY)-$(VERSION)-$(GOOS)-$(GOARCH).zip) \
 		zip -j $(ARCHIVE) dist/$(BINARY)-$(GOOS)-$(GOARCH)$(EXT) LICENSE README.md ; \
 	)
+	@scripts/notarize-darwin.sh dist/$(BINARY)-$(VERSION)-darwin-amd64.zip "$(NOTARY_PROFILE)"
+	@scripts/notarize-darwin.sh dist/$(BINARY)-$(VERSION)-darwin-arm64.zip "$(NOTARY_PROFILE)"
 
 ## clean: Remove build artifacts
 clean:
