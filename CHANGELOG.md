@@ -1,5 +1,30 @@
 # Changelog
 
+## v1.3.0 - 2026-07-12
+
+### Removed
+
+- **darwin/amd64 (Intel) pre-built binary.** macOS releases now ship
+  **arm64 only**, per the org-wide policy (darwin is Apple-Silicon only; no
+  universal binaries). Intel Mac users can build from source.
+
+### Changed
+
+- **Linux release archives are now `.tar.gz`** (darwin/windows remain `.zip`),
+  per `nlink-jp/.github` CONVENTIONS.md §Release Archive Standard. Archives
+  already bundled `LICENSE` + `README.md` alongside the canonical binary.
+- **darwin code-signature identifier** is now the canonical `json-to-sqlite`
+  (was `json-to-sqlite-darwin-arm64`), set via `codesign -i` so it stays
+  stable after the archived binary is renamed to its canonical name.
+
+### Fixed
+
+- Removed a redundant trailing newline in two `-o` / `-t` "required" error
+  messages (`fmt.Fprintln` already appends one), which also resolves a
+  `go vet` failure that blocked `go test`.
+
+Otherwise no change to the binary's behaviour — a packaging / build-config release.
+
 ## v1.2.4 - 2026-05-23
 
 ### Changed

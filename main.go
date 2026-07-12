@@ -55,13 +55,13 @@ func main() {
 	}
 
 	if *outputDB == "" {
-		fmt.Fprintln(os.Stderr, "Error: Output database file (-o) is required.\n")
+		fmt.Fprintln(os.Stderr, "Error: Output database file (-o) is required.")
 		flag.Usage()
 		os.Exit(1)
 	}
 
 	if *tableName == "" {
-		fmt.Fprintln(os.Stderr, "Error: Table name (-t) is required.\n")
+		fmt.Fprintln(os.Stderr, "Error: Table name (-t) is required.")
 		flag.Usage()
 		os.Exit(1)
 	}

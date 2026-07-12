@@ -11,7 +11,7 @@ JSONデータをインテリジェントに解釈し、SQLiteデータベース�
 -   **柔軟な入力**: ファイルから、または標準入力から直接パイプで渡されたJSONデータを読み取ります。
 -   **データ型マッピング**: JSONの型を適切なSQLiteの型（`TEXT`, `REAL`, `INTEGER`）に自動的にマッピングします。型が競合した場合は安全のために`TEXT`が使用されます。
 -   **ネストされたJSONの処理**: ネストされたJSONオブジェクトや配列を`TEXT`カラムにシリアライズして保存します。
--   **クロスプラットフォーム**: 付属の`Makefile`により、macOS (amd64/arm64)、Linux (amd64/arm64)、Windows (amd64) 向けにビルドできます。CGO依存のため、Linux・Windows のクロスコンパイルには Podman または Docker コンテナを使用します。
+-   **クロスプラットフォーム**: 付属の`Makefile`により、macOS (arm64)、Linux (amd64/arm64)、Windows (amd64) 向けにビルドできます。macOS は arm64 のみ（Apple Silicon）・Intel は非対応（Intel Mac はソースからビルド可能）。CGO依存のため、Linux・Windows のクロスコンパイルには Podman または Docker コンテナを使用します。
 
 ## インストール
 

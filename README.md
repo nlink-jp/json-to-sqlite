@@ -11,7 +11,7 @@ This tool automatically infers table schemas, handles schema evolution by adding
 -   **Flexible Input**: Reads JSON data from files or piped directly from standard input.
 -   **Data Type Mapping**: Automatically maps JSON types to appropriate SQLite types (`TEXT`, `REAL`, `INTEGER`). Defaults to `TEXT` for safety in case of conflicting types.
 -   **Handles Nested JSON**: Serializes nested JSON objects and arrays into `TEXT` columns.
--   **Cross-Platform**: Builds for macOS (amd64/arm64), Linux (amd64/arm64), and Windows (amd64) via the provided `Makefile`. Linux and Windows cross-compilation uses Podman (or Docker) containers due to CGO requirements.
+-   **Cross-Platform**: Builds for macOS (arm64), Linux (amd64/arm64), and Windows (amd64) via the provided `Makefile`. macOS ships arm64 only (Apple Silicon); Intel Macs can build from source. Linux and Windows cross-compilation uses Podman (or Docker) containers due to CGO requirements.
 
 ## Installation
 
