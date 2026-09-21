@@ -107,4 +107,15 @@ identical to v1.2.3.
 - Cross-platform build support (macOS, Linux, Windows) via `Makefile`.
 - macOS Universal Binary support.
 - Dynamic versioning from Git tags.
-- Comprehensive `README.md` (English) and `README.ja.md` (Japanese) documentation.
+- Comprehensive `README.md` (English) and `README.ja.md` (Japanese) documentation.## [Unreleased]
+
+### Fixed
+
+- **`make verify-release` now fails closed.** Its last block chained unzip, the
+  packaged binary's `--version` and `spctl` with `&&` and ended the whole chain
+  in `|| true`, so a zip that did not unpack or a binary that did not run exited
+  0 and the upload proceeded. Each step is now judged on its own, the packaged
+  binary's `--version` must contain the tag being released, and only the
+  informational `spctl` line may be ignored. Matches the org template
+  (CONVENTIONS.md §Code Signing → Verifying a release).
+
