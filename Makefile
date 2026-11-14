@@ -5,8 +5,11 @@ LDFLAGS := -ldflags '-X main.Version=$(VERSION)'
 
 # Container runtime (podman preferred, docker as fallback)
 CONTAINER := $(shell command -v podman 2>/dev/null || command -v docker 2>/dev/null)
-# Go image used for container builds — must match go.mod toolchain.
-GO_IMAGE  := golang:1.26
+# Go image used for container builds. The official image sets GOTOOLCHAIN=local,
+# so it must be at least the go line of go.mod, and it is what the Linux and
+# Windows binaries ship — a tag alone moves, so it is pinned by digest (the
+# multi-arch index). Move it together with go.mod.
+GO_IMAGE  := golang:1.27.4@sha256:5e8afd493a7124a8586e134d9b532731161d4b9becf9dee5a5956b107426f93d
 
 # macOS Developer ID signing / notarization (see nlink-jp/.github
 # CONVENTIONS.md §Code Signing). Defaults match any Developer ID
