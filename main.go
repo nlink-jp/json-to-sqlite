@@ -87,7 +87,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error opening database: %v", err)
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	finalColumns, err := setupTable(db, *tableName, data)
 	if err != nil {
@@ -215,7 +215,7 @@ func setupTable(db *sql.DB, tableName string, data []map[string]interface{}) ([]
 		if err != nil {
 			return nil, fmt.Errorf("failed to get existing table info: %w", err)
 		}
-		defer rows.Close()
+		defer func() { _ = rows.Close() }()
 
 		existingColumns := make(map[string]bool)
 		for rows.Next() {
@@ -276,7 +276,7 @@ func insertData(db *sql.DB, tableName string, columns []string, data []map[strin
 	if err != nil {
 		return fmt.Errorf("failed to prepare insert statement: %w", err)
 	}
-	defer stmt.Close()
+	defer func() { _ = stmt.Close() }()
 
 	for _, row := range data {
 		values := make([]interface{}, len(columns))
