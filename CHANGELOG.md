@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Changed
+
+- The Linux and Windows builds are scanned with `govulncheck` inside the
+  containers that build them (`make build-linux`, `make build-windows`), right
+  before each is built and with that build's own environment; a finding stops
+  the build. They are cgo builds for another OS, which the macOS host cannot
+  load, so `make vuln` could only ever judge the darwin build. The container
+  installs `govulncheck` by version (`GOVULNCHECK_VERSION` in the Makefile).
+
 ## v1.3.1 - 2026-11-14
 
 ### Security
